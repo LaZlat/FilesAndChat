@@ -1,0 +1,117 @@
+﻿<Window x:Class="FilesAndChat.Views.ApplicationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FilesAndChat.Views" xmlns:local1="clr-namespace:FilesAndChat"
+        mc:Ignorable="d"
+        Title="Chat and Files share" Height="512.8" Width="819.2">
+    <Window.Resources>
+        <local1:BadWordsConverter x:Key="BadWordsConverter" />
+        <ControlTemplate x:Key="roundbutton" TargetType="Button">
+            <Grid>
+                <Ellipse x:Name="backgroundElement" Fill="{TemplateBinding Background}" Stroke="{TemplateBinding Foreground}" />
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Setter Property="Fill" TargetName="backgroundElement" Value="AliceBlue"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </Window.Resources>
+    <Window.InputBindings>
+        <KeyBinding Command="{Binding SendCommand}"
+              Gesture="Enter" />
+    </Window.InputBindings>
+    <Grid Background="#1687a7">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Margin="0,5,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Label HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="18" Foreground="White" Content="{Binding Username}" Style="{StaticResource Labs}"></Label>
+            <Button HorizontalAlignment="Left" Width="45" Height="45" Command="{Binding LogOffCommand}" CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" Template="{StaticResource roundbutton}">Log off</Button>
+        </StackPanel>
+        <TabControl Grid.Row="1" HorizontalContentAlignment="Center" Margin="0,10,0,-10">
+            <TabItem Header="Files">
+
+                <Grid Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="51*" />
+                        <ColumnDefinition Width="353*"/>
+                        <ColumnDefinition Width="403*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="100"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <Label  Content="Your files:" FontSize="18" Grid.ColumnSpan="2" Margin="0,0,0,265.2" Grid.RowSpan="2" Style="{StaticResource Labs}"/>
+                    <ListView  Grid.Row ="1" ItemsSource="{Binding Files}" Margin="0,0.4,20,0.2" Grid.ColumnSpan="2" >
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn DisplayMemberBinding="{Binding FileName}" Header="File name"/>
+                                <GridViewColumn DisplayMemberBinding="{Binding FilePath}" Header="File path"/>
+                                <GridViewColumn Header="Remove">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Command="{Binding DataContext.DeleCommand  
+                                                , RelativeSource={RelativeSource AncestorType=ListView}}"
+                                                    CommandParameter="{Binding}" Content="Delete"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <StackPanel VerticalAlignment="Top" Grid.Row="2" Orientation="Horizontal" Margin="0,9.8,0,0" Grid.ColumnSpan="2">
+                        <TextBox Width="100" Text="{Binding FilePath, UpdateSourceTrigger=PropertyChanged,  ValidatesOnDataErrors=True}" Margin="5,0,0,0"/>
+                        <Button Command="{Binding ChooseCommand}" Margin="5,0">Choose...</Button>
+                        <Button Command="{Binding AddCommand}" Margin="5,0">Add</Button>
+                    </StackPanel>
+                    <Label Grid.Column="2" Content="Files from other people:" FontSize="18" Margin="0,0,0.2,265.2" Grid.RowSpan="2" Style="{StaticResource Labs}"/>
+                    <ListView Grid.Column="2" Grid.Row="1" ItemsSource="{Binding Friends}" Margin="0,0.4,0.2,0.2">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn DisplayMemberBinding="{Binding Username}" Header="Username"/>
+                                <GridViewColumn DisplayMemberBinding="{Binding FileName}" Header="File name"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Chat">
+                <Grid Background="#FFE5E5E5" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="270"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="60"/>
+                        </Grid.RowDefinitions>
+
+                        <ListBox ItemsSource="{Binding Chat}"/>
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="20">
+                            <TextBox  Width="400" Text="{Binding Message, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BadWordsConverter},  ValidatesOnDataErrors=True}"/>
+                            <Button  Command="{Binding SendCommand}" Margin="5,0,0,0">Send</Button>
+                        </StackPanel>
+                        
+                    </Grid>
+
+                    <ListView ItemsSource="{Binding Friends}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn DisplayMemberBinding="{Binding Username}" Header="Friend" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
