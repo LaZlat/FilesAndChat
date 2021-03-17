@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace FilesAndChat.Models
 {
-    class Friend
+    public class Friend
     {
-        public string Username { get; set; }
-        public string FileName { get; set; }
+        public int Id { get; set; }
+        [Required]
+        public int FriendsId { get; set; }
+        public ICollection<FriendFile> FriendFiles { get; set; }
     }
 }

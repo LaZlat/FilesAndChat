@@ -48,15 +48,7 @@
             get;
             private set;
         }
-        /*NEBEREIKIA
-         * public bool CanLogin(object parameter) 
-        {
-  
-            if (Username == null)
-                return false; 
 
-            return !string.IsNullOrWhiteSpace(Username);
-        }*/
 
         public string Error { get; private set; }
 

@@ -58,7 +58,8 @@ namespace FilesAndChat.ViewModels
         {
             get
             {
-                return user.Files;
+                ObservableCollection<File> newOne = new ObservableCollection<File>(user.Files);
+                return newOne;
             }
         }
 
@@ -66,15 +67,17 @@ namespace FilesAndChat.ViewModels
         {
             get
             {
-                return user.Friends;
+                ObservableCollection<Friend> newOne = new ObservableCollection<Friend>(user.Friends);
+                return newOne;
             }
         }
 
-        public ObservableCollection<string> Chat
+        public ObservableCollection<Message> Msg
         {
             get
             {
-                return user.Chat;
+                ObservableCollection<Message> newOne = new ObservableCollection<Message>(user.Msg);
+                return newOne;
             }
         }
 
@@ -90,18 +93,6 @@ namespace FilesAndChat.ViewModels
         public ICommand AddCommand { get; private set; }
         public ICommand SendCommand { get; private set; }
         public ICommand LogOffCommand { get; private set; }
-
-        /*NEBEREIKIA
-        public bool CanAdd
-        {
-            get
-            {
-                if (FilePath == null)
-                    return false;
-
-                return !string.IsNullOrWhiteSpace(FilePath);
-            }
-        }*/
 
 
         public void AddFileToList()
@@ -121,21 +112,10 @@ namespace FilesAndChat.ViewModels
             }
         }
 
-        /*NEBEREIKIA
-        public bool CanSend
-        {
-            get
-            {
-                if (Message == null)
-                    return false;
-
-                return !string.IsNullOrWhiteSpace(Message);
-            }
-        }*/
 
         public void SendMessage()
         {
-            Chat.Add(Username + ": " + Message);
+            //Message.Add(Username + ": " + Message);
             OnPropertyChanged("Chat");
             Message = "";
             OnPropertyChanged("Message");
