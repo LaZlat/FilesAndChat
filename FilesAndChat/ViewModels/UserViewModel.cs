@@ -1,9 +1,11 @@
 ﻿namespace FilesAndChat.ViewModels
 {
     using FilesAndChat.Commands;
+    using FilesAndChat.DataContext;
     using FilesAndChat.Models;
     using FilesAndChat.Views;
     using System.ComponentModel;
+    using System.Linq;
     using System.Windows.Input;
 
     internal class UserViewModel : DefaultViewMode, IDataErrorInfo
@@ -54,11 +56,21 @@
 
         public void LoginUser(object parameter)
         {
+            var cont = new TheContext();
+
+            var existingUser = cont.Users.Where(s => s.Username == user.Username).FirstOrDefault<User>();
+            if (existingUser == null)
+            {
+                cont.Add(user);
+                cont.SaveChanges();
+                existingUser = user;
+                cont.Dispose();
+            } 
 
             if (parameter is System.Windows.Window)
             {
                 ApplicationWindow view = new ApplicationWindow();
-                applicationViewModel = new ApplicationViewModel(user);
+                applicationViewModel = new ApplicationViewModel(existingUser);
 
                 view.DataContext = applicationViewModel;
                 view.Show();

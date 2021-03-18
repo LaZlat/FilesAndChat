@@ -2,14 +2,17 @@
 namespace FilesAndChat.ViewModels
 {
     using FilesAndChat.Commands;
+    using FilesAndChat.DataContext;
     using FilesAndChat.Models;
     using FilesAndChat.Views;
     using GalaSoft.MvvmLight.Command;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Win32;
     using System;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Globalization;
+    using System.Linq;
     using System.Windows;
     using System.Windows.Data;
     using System.Windows.Input;
@@ -58,7 +61,16 @@ namespace FilesAndChat.ViewModels
         {
             get
             {
-                ObservableCollection<File> newOne = new ObservableCollection<File>(user.Files);
+                var cont = new TheContext();
+
+                var smth = cont.Users.Where(a => a.Username == user.Username).Select(a => a.Files).SingleOrDefault();
+                ///var smth = cont.Users.Select(d => d.Files);
+                ObservableCollection < File > newOne = new ObservableCollection<File>(smth);
+
+                //cont.SaveChanges();
+                cont.Dispose();
+                //ObservableCollection<File> newOne = new ObservableCollection<File>(user.Files);
+                //ObservableCollection<File> newOne = new ObservableCollection<File>();
                 return newOne;
             }
         }
@@ -67,7 +79,7 @@ namespace FilesAndChat.ViewModels
         {
             get
             {
-                ObservableCollection<Friend> newOne = new ObservableCollection<Friend>(user.Friends);
+                ObservableCollection<Friend> newOne = new ObservableCollection<Friend>();
                 return newOne;
             }
         }
@@ -76,7 +88,7 @@ namespace FilesAndChat.ViewModels
         {
             get
             {
-                ObservableCollection<Message> newOne = new ObservableCollection<Message>(user.Msg);
+                ObservableCollection<Message> newOne = new ObservableCollection<Message>();
                 return newOne;
             }
         }
@@ -97,7 +109,13 @@ namespace FilesAndChat.ViewModels
 
         public void AddFileToList()
         {
-            Files.Add(file);
+            var cont = new TheContext();
+            user.Files.Add(file);
+            cont.Users.Update(user);
+
+            cont.SaveChanges();
+            cont.Dispose();
+
             OnPropertyChanged("FilePath");
         }
 
