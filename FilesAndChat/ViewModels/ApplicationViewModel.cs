@@ -64,31 +64,51 @@ namespace FilesAndChat.ViewModels
                 var cont = new TheContext();
 
                 var smth = cont.Users.Where(a => a.Username == user.Username).Select(a => a.Files).SingleOrDefault();
-                ///var smth = cont.Users.Select(d => d.Files);
                 ObservableCollection < File > newOne = new ObservableCollection<File>(smth);
-
-                //cont.SaveChanges();
                 cont.Dispose();
-                //ObservableCollection<File> newOne = new ObservableCollection<File>(user.Files);
-                //ObservableCollection<File> newOne = new ObservableCollection<File>();
+
                 return newOne;
             }
         }
 
-        public ObservableCollection<Friend> Friends
+        public ObservableCollection<User> People
         {
             get
             {
-                ObservableCollection<Friend> newOne = new ObservableCollection<Friend>();
+                var cont = new TheContext();
+
+                var smth = cont.Users.Where(a => a.Id != user.Id).ToList();
+                ObservableCollection<User> newOne = new ObservableCollection<User>(smth);
+                cont.Dispose();
+
                 return newOne;
             }
         }
 
-        public ObservableCollection<Message> Msg
+        public ObservableCollection<string> Msg
         {
             get
             {
-                ObservableCollection<Message> newOne = new ObservableCollection<Message>();
+                var cont = new TheContext();
+
+                var smth = cont.Messages.Select(a => a.Msg).ToList();
+                ObservableCollection<string> newOne = new ObservableCollection<string>(smth);
+                cont.Dispose();
+;
+                return newOne;
+            }
+        }
+
+        public ObservableCollection<File> FriendFiles
+        {
+            get
+            {
+                var cont = new TheContext();
+
+                //var smth = cont.Messages.Select(a => a.Msg).ToList();
+                ObservableCollection<File> newOne = new ObservableCollection<File>();
+                cont.Dispose();
+                ;
                 return newOne;
             }
         }
@@ -116,6 +136,7 @@ namespace FilesAndChat.ViewModels
             cont.SaveChanges();
             cont.Dispose();
 
+            OnPropertyChanged("Files");
             OnPropertyChanged("FilePath");
         }
 
@@ -133,8 +154,14 @@ namespace FilesAndChat.ViewModels
 
         public void SendMessage()
         {
-            //Message.Add(Username + ": " + Message);
-            OnPropertyChanged("Chat");
+            var cont = new TheContext();
+
+            user.Msg.Add(new Message{ Msg = user.Username + ": " + Message});
+            cont.Users.Update(user);
+
+            cont.SaveChanges();
+            cont.Dispose();
+            OnPropertyChanged("Msg");
             Message = "";
             OnPropertyChanged("Message");
         }
@@ -159,11 +186,42 @@ namespace FilesAndChat.ViewModels
                   ?? (_deleteCommand = new RelayCommand<File>(
                     _file =>
                     {
-                        Files.Remove(_file);
+                        var cont = new TheContext();
+                        cont.Files.Remove(_file);
+                        //cont.Users.Update(user);
+
+                        cont.SaveChanges();
+                        cont.Dispose();
+                        OnPropertyChanged("Files");
                     }));
             }
         }
 
+        private RelayCommand<User> _addFriendCommand;
+        public RelayCommand<User> AddFriendCommand
+        {
+            get
+            {
+                return _addFriendCommand
+                  ?? (_addFriendCommand = new RelayCommand<User>(
+                    _friend =>
+                    {
+                        var cont = new TheContext();
+
+                        Friend newFriend = new Friend();
+
+                        newFriend.FriendsId = _friend.Id;
+                        //newFriend.FriendFiles.Add(cont.Users.Where(a => a.Id == _friend.Id).Select(b => b.Files).ToList());
+
+                        user.Friends.Add(new Friend { FriendsId = _friend.Id });
+                        cont.Users.Update(user);
+
+                        cont.SaveChanges();
+                        cont.Dispose();
+                        OnPropertyChanged("FriendFiles");
+                    }));
+            }
+        }
         public string Error { get; private set; }
 
         public string this[string columnName]

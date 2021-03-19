@@ -75,7 +75,7 @@
                     <ListView Grid.Column="2" Grid.Row="1" ItemsSource="{Binding Friends}" Margin="0,0.4,0.2,0.2">
                         <ListView.View>
                             <GridView>
-                                <!--<GridViewColumn DisplayMemberBinding="{Binding Username}" Header="Username"/>-->
+                                <GridViewColumn DisplayMemberBinding="{Binding Username}" Header="Username"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -94,7 +94,7 @@
                             <RowDefinition Height="60"/>
                         </Grid.RowDefinitions>
 
-                        <ListBox ItemsSource="{Binding Chat}"/>
+                        <ListBox ItemsSource="{Binding Msg}"/>
                         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="20">
                             <TextBox  Width="400" Text="{Binding Message, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BadWordsConverter},  ValidatesOnDataErrors=True}"/>
                             <Button  Command="{Binding SendCommand}" Margin="5,0,0,0">Send</Button>
@@ -102,10 +102,19 @@
                         
                     </Grid>
 
-                    <ListView ItemsSource="{Binding Friends}">
+                    <ListView ItemsSource="{Binding People}">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn DisplayMemberBinding="{Binding Username}" Header="Friend" />
+                                <GridViewColumn Header="Add">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Command="{Binding DataContext.AddFriendCommand  
+                                                , RelativeSource={RelativeSource AncestorType=ListView}}"
+                                                    CommandParameter="{Binding}" Content="Add"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
                             </GridView>
                         </ListView.View>
                     </ListView>
